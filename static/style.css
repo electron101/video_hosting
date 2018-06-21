@@ -1,0 +1,29 @@
+.main_header {
+	width: 100%;
+	min-height: 5%;
+	background-color: lightgrey;
+}
+
+.logo {
+	font-family: calibri;
+	margin: 2%;
+	text-decoration: none;
+	color: Black;
+}
+
+.auth {
+	font-family: calibri;
+	margin-left: 80%;
+	text-decoration: none;
+	color: Black;
+}
+
+.main_content {
+	height: auto;
+	width: 100%;
+	background-color: lightgrey;
+}
+
+.auth_form {
+	margin-left: 40%;
+}
