@@ -1,7 +1,7 @@
 <div>
 <p>Личная информация:</p>
-<?php echo $context['name'].'<br>'; ?>
-<?php echo $context['datereg']; ?>
+<?php echo $context[0]['name'].'<br>'; ?>
+<?php echo $context[0]['datereg']; ?>
 
 <p>Добавить видео</p>
 <form action="" method="Post" enctype="multipart/form-data">
@@ -17,4 +17,16 @@
 	<br>
 	<input type="submit" value="Загрузить">
 </form>
+
+<p>Видео загруженное пользователем:</p>
+<?php for($i=0;$i<count($context);$i++): ?>
+	<p>Наименование: <?=$context[$i]['name_video']?></p>
+	<p>Дата загрузки: <?=$context[$i]['date']?></p>
+	<form action="" method="POST">
+		<input type="hidden" name="act" value="delete">
+		<input type="hidden" name="id" value="<?=$context[$i]['id']?>">
+		<input type="submit" value="Удалить">
+	</form>
+<?php endfor; ?>
+
 </div>

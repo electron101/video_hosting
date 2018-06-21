@@ -29,6 +29,12 @@
 		case "do_register":
 			do_register($mysqli);
 			break;
+		case "search":
+			search($mysqli);
+			break;
+		case "delete":
+			delete($mysqli);
+			break;
 		default:
 			loadBasePage($mysqli);
 			break;

@@ -3,17 +3,47 @@ session_start();
 
 function loadBasePage($mysqli)
 { 
-	$row = $mysqli->query(" SELECT video FROM video ");
+	$row = $mysqli->query(" SELECT * FROM video ");
 
 	$context = array();
-
+	
 	while($video = $row->fetch_array())
 	{
-		array_push($context, $video['video']);
+		array_push($context, $video);
 	}
 
 	$render = new Render("templates\\start.php", $context);
 	return $render -> renderPage();
+}
+
+function delete()
+{
+	
+}
+
+function search($mysqli)
+{
+	if (isset($_POST['search_text']))
+	{
+		$search_text = $_POST['search_text'];
+		if ($search_text == "")
+		{
+			loadBasePage($mysqli);
+			return;
+		}
+		
+		$row = $mysqli->query(" SELECT * FROM video WHERE name like '%".$search_text."%'");
+
+		$context = array();
+	
+		while($video = $row->fetch_array())
+		{
+			array_push($context, $video);
+		}
+
+		$render = new Render("templates\\start.php", $context);
+		return $render -> renderPage();
+	}
 }
 
 function enter()
@@ -45,7 +75,7 @@ function login($mysqli)
 		{
 			$row->close();
 			$mysqli->close();
-			$context = "Пользователь с таким именем уже есть в базе";
+			$context = "Пользователя с таким именем нет в базе";
 			$render = new Render("templates\\reg_errors.php", $context);
 			return $render -> renderPage();
 		}
@@ -78,11 +108,17 @@ function logout()
 function lk($mysqli)
 {
 	$log = $_SESSION['log'];
-	$row = $mysqli->query("SELECT * FROM users WHERE name = '$log'");
+	$row = $mysqli->query("SELECT users.name, users.datereg, video.id, video.name as 'name_video', video.date
+				FROM users
+				Inner Join video On video.user_id = users.id
+				WHERE users.name = '$log'");
+	$user_info = array();
+	while ($user = $row->fetch_array())
+	{
+		array_push($user_info, $user);
+	}
 	
-	$user = $row->fetch_array();
-	
-	$context = $user;
+	$context = $user_info;
 	
 	$render = new Render("templates\\lk.php", $context);
 	return $render -> renderPage();
@@ -94,6 +130,11 @@ function upload($mysqli)
 	{
 		$name = $_POST['name'];
 		$desc = $_POST['desc'];
+		$log = $_SESSION['log'];
+		
+		$row = $mysqli->query("SELECT id FROM users WHERE name = '$log'");
+		$user_id = $row->fetch_array();
+		$id = $user_id['id'];
 		
 		//Путь
 		$uploaddir = 'downloads/';
@@ -112,8 +153,8 @@ function upload($mysqli)
 		}
 			
 		$video = 'downloads/' . $file_name;
-		$sql = "INSERT INTO video (name, description, video) 
-							VALUES ('".$name."', '".$desc."', '".$video."')";
+		$sql = "INSERT INTO video (name, description, video, user_id) 
+							VALUES ('".$name."', '".$desc."', '".$video."', ".$id.")";
 											
 
 		if ($mysqli->query($sql) === FALSE)

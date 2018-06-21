@@ -1,7 +1,7 @@
 <div class="auth_form">
 	<form action="" method="POST">
-		<label for="login">Логин</label>
 		<input type="hidden" name="act" value="login">
+		<label for="login">Логин</label>
 		<input type="text" id="login" name="log" required>
 		<br>
 		<label for="pass">Пароль</label>		
