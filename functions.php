@@ -12,13 +12,24 @@ function loadBasePage($mysqli)
 		array_push($context, $video);
 	}
 
-	$render = new Render("templates\\start.php", $context);
+	$render = new Render("templates/start.php", $context);
 	return $render -> renderPage();
 }
 
-function delete()
+function delete($mysqli)
 {
-	
+	if (isset($_POST['id']))
+	{
+		$id = $_POST['id'];
+		IF ($mysqli->query("Delete From video Where id = $id") == FALSE)
+		{
+			$context = "Ошибка приудалении";
+			$render = new Render("templates/reg_errors.php", $context);
+			return $render -> renderPage();
+		}
+		
+		lk($mysqli);
+	}
 }
 
 function search($mysqli)
@@ -41,20 +52,20 @@ function search($mysqli)
 			array_push($context, $video);
 		}
 
-		$render = new Render("templates\\start.php", $context);
+		$render = new Render("templates/start.php", $context);
 		return $render -> renderPage();
 	}
 }
 
 function enter()
 {	
-	$render = new Render("templates\\enter.php");
+	$render = new Render("templates/enter.php");
 	return $render -> renderPage();
 }
 
 function register()
 {	
-	$render = new Render("templates\\register.php");
+	$render = new Render("templates/register.php");
 	return $render -> renderPage();
 }
 
@@ -76,7 +87,7 @@ function login($mysqli)
 			$row->close();
 			$mysqli->close();
 			$context = "Пользователя с таким именем нет в базе";
-			$render = new Render("templates\\reg_errors.php", $context);
+			$render = new Render("templates/reg_errors.php", $context);
 			return $render -> renderPage();
 		}
 		else
@@ -90,7 +101,7 @@ function login($mysqli)
 			$row->close();
 			$mysqli->close();
 			
-			$render = new Render("templates\\start.php");
+			$render = new Render("templates/start.php");
 			return $render -> renderPage();
 		}
 	}
@@ -101,7 +112,7 @@ function logout()
 	unset($_SESSION['log']);
 	session_destroy();
 	
-	$render = new Render("templates\\start.php");
+	$render = new Render("templates/start.php");
 	return $render -> renderPage();
 }
 
@@ -120,7 +131,7 @@ function lk($mysqli)
 	
 	$context = $user_info;
 	
-	$render = new Render("templates\\lk.php", $context);
+	$render = new Render("templates/lk.php", $context);
 	return $render -> renderPage();
 }
 
@@ -142,13 +153,13 @@ function upload($mysqli)
 		$file_name = time().translit($_FILES['video']['name']);
 			
 		$uploadfile = $uploaddir . basename($file_name);
-			
+		print_r($_FILES);
 		if (move_uploaded_file($_FILES['video']['tmp_name'], $uploadfile)){
 		}
 		else
 		{
 			$context = "Ошибка при загрузке видео 1";
-			$render = new Render("templates\\reg_errors.php", $context);
+			$render = new Render("templates/reg_errors.php", $context);
 			return $render -> renderPage();
 		}
 			
@@ -160,13 +171,13 @@ function upload($mysqli)
 		if ($mysqli->query($sql) === FALSE)
 		{
 			$context = "Ошибка при загрузке видео 2";
-			$render = new Render("templates\\reg_errors.php", $context);
+			$render = new Render("templates/reg_errors.php", $context);
 			return $render -> renderPage();
 		}
 		
 		$mysqli->close();
 		
-		$render = new Render("templates\\upload_success.php");
+		$render = new Render("templates/upload_success.php");
 		return $render -> renderPage();
 	}
 }
@@ -182,7 +193,7 @@ function do_register($mysqli)
 		if ($pass != $pass2)
 		{
 			$context = "Пароли не совпадают";
-			$render = new Render("templates\\reg_errors.php", $context);
+			$render = new Render("templates/reg_errors.php", $context);
 			return $render -> renderPage();
 		}
 		else
@@ -192,7 +203,7 @@ function do_register($mysqli)
 			if ($row->num_rows != 0) 
 			{
 				$context = "Пользователь с таким именем уже есть в базе";
-				$render = new Render("templates\\reg_errors.php", $context);
+				$render = new Render("templates/reg_errors.php", $context);
 				return $render -> renderPage();
 			}
 			
@@ -202,7 +213,7 @@ function do_register($mysqli)
 										VALUES (?, ?, CURRENT_DATE, 2)")))
 			{
 				$context = "Ошибка при подготовке запроса";
-				$render = new Render("templates\\reg_errors.php", $context);
+				$render = new Render("templates/reg_errors.php", $context);
 				return $render -> renderPage();
 			}
 	
@@ -215,7 +226,7 @@ function do_register($mysqli)
 			if (!$stmt->bind_param('ss', $login, sha1($pass)))
 			{
 				$context = "Ошибка при привязке параметров";
-				$render = new Render("templates\\reg_errors.php", $context);
+				$render = new Render("templates/reg_errors.php", $context);
 				return $render -> renderPage();
 			}
 	
@@ -228,7 +239,7 @@ function do_register($mysqli)
 			if (!$stmt->execute())
 			{
 				$context = "Ошибка при выполнении запроса";
-				$render = new Render("templates\\reg_errors.php", $context);
+				$render = new Render("templates/reg_errors.php", $context);
 				return $render -> renderPage();
 			}
 	
@@ -239,7 +250,7 @@ function do_register($mysqli)
 			/* закрываем открытое соединение */
 			$mysqli->close(); 
 			
-			$render = new Render("templates\\enter.php");
+			$render = new Render("templates/enter.php");
 			return $render -> renderPage();
 		}
 	}
